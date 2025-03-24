@@ -8,3 +8,6 @@
   ebaz4205_gpio_sd_dma   -
   и т.д.
 
+Заходим внутрь каталога и клонируем 
+
+git clone https://github.com/lark-web/Linux_build_fish.git
