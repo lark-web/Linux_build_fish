@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/home/lark/ebaz/u-boot/tools/mkimage -f ebaz.its  ebaz.itb

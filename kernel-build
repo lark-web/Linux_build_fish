@@ -1,0 +1,25 @@
+#!/bin/sh
+cd kernel
+#make -C $HOME/linux-xlnx  \
+#	O=$PWD  \
+#	ARCH=arm  \
+#	xilinx_zynq_defconfig  
+make -C /home/lark/linux-xlnx  \
+	O=$PWD \
+	ARCH=arm  \
+	LOCALVERSION=  \
+	CROSS_COMPILE=$HOME/ebaz/buildroot/host/bin/arm-xilinx-linux-gnueabihf-  \
+	nconfig
+make -C /home/lark/linux-xlnx  -j8  \
+	O=$PWD   \
+	ARCH=arm  \
+	LOCALVERSION=    \
+	CROSS_COMPILE=$HOME/ebaz/buildroot/host/bin/arm-xilinx-linux-gnueabihf- \
+	zImage modules
+make -C /home/lark/ebaz/kernel   \
+	ARCH=arm   \
+	LOCALVERSION=  \
+	CROSS_COMPILE=$HOME/ebaz/buildroot/host/bin/arm-xilinx-linux-gnueabihf-   \
+	INSTALL_MOD_PATH=/home/lark/ebaz/rootfs_overlay  \
+	 modules_install  
+

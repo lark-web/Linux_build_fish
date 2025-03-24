@@ -1,0 +1,184 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2021 Michael Walle <michael@walle.cc>
+ */
+/dts-v1/;
+/include/ "zynq-7000.dtsi"
+/include/ "pl.dtsi"
+/ {
+	model = "EBAZ4205";
+	compatible =  "xlnx,zynq-7000";
+
+	aliases {	
+		ethernet0 = &gem0;
+		serial0 = &uart1;
+		mmc0 = &sdhci0;
+
+	};
+
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x10000000>;
+	};
+
+	hellokeys@41200000 {
+		compatible = "arrow, hellokeys";
+		reg = <0x41200000 0x100>;
+		clock-names = "s_axi_aclk";
+		clocks = <&clkc 15>;
+	};
+
+	chosen {
+		bootargs = "earlycon console=ttyPS0,115200n8 earlyprintk root=/dev/ram0 clk_ignore_unused";
+		stdout-path = "serial0:115200n8";
+	};
+	amba_pl: amba_pl {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "simple-bus";
+		ranges ;
+		axi_gpio_0: gpio@41200000 {
+			#gpio-cells = <3>;
+			clock-names = "s_axi_aclk";
+			clocks = <&clkc 15>;
+			compatible = "lark,trafgen";
+			gpio-controller ;
+			reg = <0x41200000 0x10000>;
+			xlnx,all-inputs = <0x0>;
+			xlnx,all-inputs-2 = <0x0>;
+			xlnx,all-outputs = <0x1>;
+			xlnx,all-outputs-2 = <0x0>;
+			xlnx,dout-default = <0x00000000>;
+			xlnx,dout-default-2 = <0x00000000>;
+			xlnx,gpio-width = <0x2>;
+			xlnx,gpio2-width = <0x20>;
+			xlnx,interrupt-present = <0x0>;
+			xlnx,is-dual = <0x0>;
+			xlnx,tri-default = <0xFFFFFFFF>;
+			xlnx,tri-default-2 = <0xFFFFFFFF>;
+		};
+	};
+};
+
+
+
+&clkc {
+	ps-clk-frequency = <33333333>;
+	fclk-enable = <1>;
+};
+
+&intc {
+	num_cpus =<2>;
+	num_interrupts =<96>;
+};
+&gpio0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gpio0_default>;
+};
+
+
+&pinctrl0 {
+	pinctrl_gpio0_default: gpio0-default {
+		mux {
+			groups = "gpio0_20_grp", "gpio0_32_grp";
+		};
+
+		conf {
+			groups = "gpio0_20_grp", "gpio0_32_grp";
+			io-standard = <3>;
+			slew-rate = <0>;
+		};
+
+		conf-pull-up {
+			pins = "MIO20", "MIO32";
+			bias-disable;
+		};
+	};
+
+	pinctrl_sdhci0_default: sdhci0-default {
+		mux {
+			groups = "sdio0_2_grp";
+			function = "sdio0";
+		};
+
+		conf {
+			groups = "sdio0_2_grp";
+			io-standard = <3>;
+			slew-rate = <0>;
+			bias-disable;
+		};
+
+		mux-cd {
+			groups = "gpio0_34_grp";
+			function = "sdio0_cd";
+		};
+
+		conf-cd {
+			groups = "gpio0_34_grp";
+			io-standard = <3>;
+			slew-rate = <0>;
+			bias-high-impedance;
+			bias-pull-up;
+		};
+	};
+
+	pinctrl_uart1_default: uart1-default {
+		mux {
+			groups = "uart1_4_grp";
+			function = "uart1";
+		};
+
+		conf {
+			groups = "uart1_4_grp";
+			io-standard = <3>;
+			slew-rate = <0>;
+		};
+
+		conf-rx {
+			pins = "MIO25";
+			bias-high-impedance;
+		};
+
+		conf-tx {
+			pins = "MIO24";
+			bias-disable;
+		};
+	};
+};
+
+&smcc {
+	status = "okay";
+};
+
+&sdhci0 {
+	status = "okay";
+	disable-wp;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_sdhci0_default>;
+};
+
+&uart1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart1_default>;
+};
+&gem0 {
+	phy-handle = <&phy0>;
+	phy-mode = "mii";
+	status = "okay";
+	xlnx,ptp-enet-clock = <0x69f6bcb>;
+	local-mac-address = [00 0a 35 00 02 91];
+	
+	ps7_ethernet_0_mdio: mdio {
+		#adress-cells = <1>;
+		#size-cells = <0>;
+		gmii_to_rgmi_0: gmii_to_rgmii_0@8 {
+			compatible = "xlnx, gmii-to-rgmii-1.0";
+			phy-handle = <&phy0>;
+			reg = <4>;
+		};
+	};
+	phy0: phy@3 {
+		reg = <3>;
+	};
+};

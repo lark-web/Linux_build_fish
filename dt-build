@@ -1,0 +1,9 @@
+#!/bin/sh
+echo Preprocessing
+rm -f ebaz.dtb
+cpp -nostdinc  \
+	-I$HOME/linux-xlnx/include \
+	-I$HOME/linux-xlnx/arch/arm/boot/dts  \
+	-undef -x assembler-with-cpp ebaz.dts ebaz_o.dts 
+dtc -I dts -O dtb -o ebaz.dtb ebaz_o.dts
+rm -f ebaz_o.dts

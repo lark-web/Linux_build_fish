@@ -1,0 +1,6 @@
+#!/bin/sh
+make -C $HOME/buildroot   \
+	O=$PWD/buildroot   \
+	ARCH=arm   \
+	BR2_EXTERNAL=$PWD/apps  \
+	nconfig

@@ -1,0 +1,7 @@
+#!/bin/sh
+make -C /home/lark/buildroot    \
+	O=$PWD/buildroot  \
+	ARCH=arm   \
+	BR2_EXTERNAL=$PWD/apps   \
+	#!BR2_JLEVEL = "$(($(nproc)-2))"
+

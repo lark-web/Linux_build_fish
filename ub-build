@@ -1,0 +1,18 @@
+#!/bin/sh
+make -C $HOME/u-boot-xlnx/configs   \
+	O=$PWD/u-boot      \
+	ARCH=arm   \
+	zynq_cse_nand_deconfig
+make -C $HOME/u-boot-xlnx   \
+	O=$PWD/u-boot   \
+	CROSS_COMPILE=$HOME/ebaz/buildroot/host/bin/arm-xilinx-linux-gnueabihf-   \
+	nconfig
+$HOME/dtc/dtc -I dts -O dtb   \
+	-i  $HOME/u-boot-xlnx/arc/arm/dts   \
+	-o u-boot/arch/arm/dts/ebaz-uboot.dtb  \
+	./ebaz-uboot.dts
+make -j8 -C $HOME/u-boot-xlnx  \
+	O=$PWD/u-boot    \
+	CROSS_COMPILE=$HOME/ebaz/buildroot/host/bin/arm-xilinx-linux-gnueabihf-  \
+	DEVICE_TREE=ebaz-uboot \
+	all
